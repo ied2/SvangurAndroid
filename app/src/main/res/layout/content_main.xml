@@ -19,7 +19,7 @@
             <SeekBar
                 android:id="@+id/seekbar"
                 android:max="10"
-                android:progress="2"
+                android:progress="3"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content" />
             <TextView

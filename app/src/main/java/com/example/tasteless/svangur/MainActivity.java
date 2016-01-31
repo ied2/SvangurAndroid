@@ -1,15 +1,14 @@
 package com.example.tasteless.svangur;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.Manifest;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -26,8 +25,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import org.json.JSONArray;
 import org.json.JSONTokener;
@@ -39,23 +48,26 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SeekBar.OnSeekBarChangeListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SeekBar.OnSeekBarChangeListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     GridView grid; // Grid to display restaurants
     int km; // KM for seekbar
     public static JSONArray restaurants; // Array of restaurants
     public static boolean doSortByDistance = false; // Do we sort by distance?
-    public Location location = null;
     private ReOrder reorder = new ReOrder(this);
-    private LocationRequest request;
-    private LocationManager mlocManager;
+
+    private double latitude;
+    private double longitude;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
+    private LocationRequest mLocationRequest;
+    private static final Object REQUEST_CHECK_SETTINGS = 1;
+    private boolean download = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        trackLocation();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,54 +90,188 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        displayRestaurants();
-
+        // Initializing seekbar
         SeekBar seekBar = (SeekBar)findViewById(R.id.seekbar);
         seekBar.setOnSeekBarChangeListener(this);
+
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+//        // Get last known location if available
+//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                mGoogleApiClient);
+//        if (mLastLocation != null) {
+//            latitude = mLastLocation.getLatitude();
+//            longitude = mLastLocation.getLongitude();
+//        }
+
+        createLocationRequest();
     }
 
 
-
-    private void trackLocation() {
-        request = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setInterval(5*60*1000)
-                .setFastestInterval(60*1000);
+    @Override
+    protected void onStart() {
+        Log.d("IED", "onStart");
+        mGoogleApiClient.connect();
+        super.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Make sure "Location" is enabled
-        mlocManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        boolean enabled = mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if(!enabled) {
-            showDialogGPS();
+        Log.d("IED", "OnResume");
+        if (mGoogleApiClient.isConnected() /*&& !mRequestingLocationUpdates*/) { // Fix mRequestingLocationUpdates later
+            startLocationUpdates();
         }
     }
 
-    // Pop up window asking to enable "Location"
-    private void showDialogGPS() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-        builder.setTitle("Location");
-        builder.setMessage("Do you want to turn on Location?");
-        builder.setInverseBackgroundForced(true);
-        builder.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(
-                        new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        });
-        builder.setNegativeButton("Ignore", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
+    @Override
+    protected void onStop() {
+        Log.d("IED", "onStop");
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    protected void createLocationRequest() {
+        Log.d("IED", "createLocationRequest");
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10*1000); // 10 sec, app will get location on 10 sec interval
+        mLocationRequest.setFastestInterval(5*1000); // 5 sec, if location is available
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+
+
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
+                        builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates locationSettingsStates = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location requests here.
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    MainActivity.this,
+                                    (Integer) REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way
+                        // to fix the settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
+    }
+
+    // When connection to mGoogleApiClient is complete, onConnected is called as callback
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.d("IED", "onConnected");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        // Get last known location if available
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            // Download all restaurants
+            if(download) {downloadRestaurants();download = false;}
+            latitude = mLastLocation.getLatitude();
+            longitude = mLastLocation.getLongitude();
+        }
+
+        startLocationUpdates();
+    }
+
+
+    // Start getting location information every few sec
+    protected void startLocationUpdates() {
+
+        Log.d("IED", "startLocationUpdates");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    // Stop location updates when app is running in background
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+    }
+
+    // When new location is found by requestLocationUpdates in method startLocationUpdates
+    // This is a callback from that
+    @Override
+    public void onLocationChanged(Location location) {
+        // Download all restaurants
+        if(download) {
+            downloadRestaurants();
+            download = false;
+        }
+        Log.d("IED", "onLocationChanged");
+        Log.d("IED", "Location: " + location);
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    // Disconnection from mGoogleApiClient
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("IED", "onConnectionSuspended");
+    }
+
+    // Connection failed to mGoogleApiClient
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("IED", "onConnectionFailed");
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -159,7 +305,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void displayRestaurants() {
+    public void downloadRestaurants() {
 
         new AsyncTask<Void, Void, String>() {
             protected String doInBackground(Void... params) {
@@ -191,8 +337,10 @@ public class MainActivity extends AppCompatActivity
 
         String id = "99";
         String password = URLEncoder.encode("lj=?&?&kk", "UTF-8");
+        String latitude = String.valueOf(this.latitude);
+        String longitude = String.valueOf(this.longitude);
 
-        URL url = new URL("http://svangur1.herokuapp.com/getRestaurants?distance=10&latitude=64.1532475&longitude=-22.0068169");
+        URL url = new URL("http://svangur1.herokuapp.com/getRestaurants?distance=5000&latitude=" + latitude + "&longitude=" + longitude);
 
         InputStream is = url.openStream();
         InputStreamReader isr = new InputStreamReader(is);
@@ -233,7 +381,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        displayRestaurants();
+        try {
+            reorder.orderRestaurants();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //    Checkbox Code BEGINS HERE
@@ -497,4 +649,26 @@ public class MainActivity extends AppCompatActivity
 //                startActivity(i);
 //            }
 //        });
+//    }
+
+//    // Pop up window asking to enable "Location"
+//    private void showDialogGPS() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setCancelable(false);
+//        builder.setTitle("Location");
+//        builder.setMessage("Do you want to turn on Location?");
+//        builder.setInverseBackgroundForced(true);
+//        builder.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                startActivity(
+//                        new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+//            }
+//        });
+//        builder.setNegativeButton("Ignore", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//        AlertDialog alert = builder.create();
+//        alert.show();
 //    }

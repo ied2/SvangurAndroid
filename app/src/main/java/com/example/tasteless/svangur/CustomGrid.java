@@ -1,5 +1,6 @@
 package com.example.tasteless.svangur;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ public class CustomGrid extends BaseAdapter {
 
         TextView textView = (TextView) convertView.findViewById(R.id.grid_text);
         textView.setText(text[position] + " km");
+
 
         ImageView imageView = (ImageView)convertView.findViewById(R.id.grid_image);
         if(imageURL[position].trim().equals("001")) {
