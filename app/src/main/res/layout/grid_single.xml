@@ -1,21 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/grid_background">
 
-    <ImageView
-        android:id="@+id/grid_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true"/>
+    <LinearLayout
+        android:layout_height="150dp"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/grid_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:textSize="16sp"
-        android:layout_below="@+id/grid_image"
-        android:layout_centerHorizontal="true"/>
+        <RelativeLayout
+            android:layout_width="100dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.2"
+            android:layout_gravity="center_horizontal">
+
+            <ImageView
+                android:src="@drawable/svangur_app_icon"
+                android:id="@+id/grid_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:gravity="center"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:text="2.3 km"
+            android:id="@+id/grid_text"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:textSize="16sp"
+            android:layout_weight="0.8"
+            android:gravity="center"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

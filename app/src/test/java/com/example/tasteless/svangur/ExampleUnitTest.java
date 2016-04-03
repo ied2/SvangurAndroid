@@ -1,4 +1,4 @@
-package com.example.tasteless.svangur;
+package com.ccc.tasteless.svangur;
 
 import org.junit.Test;
 

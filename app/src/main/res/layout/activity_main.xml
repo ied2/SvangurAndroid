@@ -21,8 +21,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/list_activity"
-        android:layout_marginTop="60dp"
-        android:background="#80FFFFFF"/>
+        android:background="#1AFFFFFF"/>
 
 </android.support.v4.widget.DrawerLayout>
 

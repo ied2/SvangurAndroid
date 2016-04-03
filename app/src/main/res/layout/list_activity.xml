@@ -1,58 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="50dp">
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/nav_header_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingStart="5dp">
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <CheckBox
+            <Switch
                 android:id="@+id/checkbox_orderByDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false"
-                android:onClick="orderByDistanceClick"/>
+                android:onClick="orderByDistanceClick" />
 
             <TextView
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_orderByDistance"
                 android:id="@+id/orderByDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="OrderByDistance"/>
+                android:text="Order By Distance"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <CheckBox
-                android:id="@+id/checkbox_everything"
+            <Switch
+                android:id="@+id/switch_everything"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="everythingClick"/>
+                android:onClick="everythingClick" />
 
             <TextView
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_everything"
                 android:id="@+id/everything"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Everything"/>
+                android:text="Everything"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="#ffffff"
+            android:layout_height="1dp"
+            android:layout_marginEnd="5dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -61,19 +81,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="pizzaClick"/>
+                android:onClick="pizzaClick"
+                style="@style/checkbox_style"/>
 
             <TextView
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_pizza"
                 android:id="@+id/pizza"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Pizza"/>
+                android:text="Pizza"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -82,19 +103,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="hamburgerClick"/>
+                android:onClick="hamburgerClick" />
 
             <TextView
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_hamburger"
                 android:id="@+id/hamburger"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hamburger"/>
+                android:text="Hamburger"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -103,19 +124,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="sushiClick"/>
+                android:onClick="sushiClick" />
 
             <TextView
                 android:id="@+id/sushi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_sushi"
-                android:text="Sushi"/>
+                android:text="Sushi"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -124,19 +145,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="seafoodClick"/>
+                android:onClick="seafoodClick" />
 
             <TextView
                 android:id="@+id/seafood"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_seafood"
-                android:text="Seafood"/>
+                android:text="Seafood"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -145,19 +166,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="steakClick"/>
+                android:onClick="steakClick" />
 
             <TextView
                 android:id="@+id/steak"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_steak"
-                android:text="Steak"/>
+                android:text="Steak"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -166,19 +187,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="indianClick"/>
+                android:onClick="indianClick"
+                style="@style/checkbox_style"/>
 
             <TextView
                 android:id="@+id/indian"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_indian"
-                android:text="Indian"/>
+                android:text="Indian"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -187,19 +209,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="italianClick"/>
+                android:onClick="italianClick" />
 
             <TextView
                 android:id="@+id/italian"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_italian"
-                android:text="Italian"/>
+                android:text="Italian"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -208,19 +230,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="asianClick"/>
+                android:onClick="asianClick" />
 
             <TextView
                 android:id="@+id/asian"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_asian"
-                android:text="Asian"/>
+                android:text="Asian"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -229,19 +251,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="fastFoodClick"/>
+                android:onClick="fastFoodClick" />
 
             <TextView
                 android:id="@+id/fastFood"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_fastFood"
-                android:text="Fast Food"/>
+                android:text="Fast Food"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -250,19 +272,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="fancyClick"/>
+                android:onClick="fancyClick" />
 
             <TextView
                 android:id="@+id/fancy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_fancy"
-                android:text="Fancy"/>
+                android:text="Fancy"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -271,17 +293,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:onClick="healthyClick"/>
+                android:onClick="healthyClick"
+                style="@style/checkbox_style"/>
 
             <TextView
                 android:id="@+id/healthy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/checkbox_healthy"
-                android:text="Healthy"/>
+                android:text="Healthy"
+                style="@style/checkbox_style"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

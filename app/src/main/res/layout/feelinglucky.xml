@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <include layout="@layout/feelinglucky_main" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/feelingLucky"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:src="@drawable/dice_icon"/>
+
+</android.support.design.widget.CoordinatorLayout>
+
+
+<!--<ImageButton-->
+<!--android:id="@+id/fab_add"-->
+<!--android:layout_width="56dp"-->
+<!--android:layout_height="56dp"-->
+<!--android:layout_gravity="bottom|right"-->
+<!--android:layout_marginBottom="100dp"-->
+<!--android:layout_marginRight="16dp"-->
+<!--android:background="@drawable/ripple_oval"-->
+<!--android:padding="10dp"-->
+<!--android:scaleType="fitXY"-->
+<!--android:elevation="8dp"-->
+<!--android:src="@drawable/dice_icon"/>-->
